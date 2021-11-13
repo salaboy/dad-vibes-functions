@@ -1,0 +1,20 @@
+name: short-term-memory-functions
+namespace: ""
+runtime: springboot
+image: ""
+imageDigest: ""
+builder: paketobuildpacks/builder:tiny
+builders:
+  default: paketobuildpacks/builder:tiny
+buildpacks: []
+healthEndpoints:
+  liveness: /health/liveness
+  readiness: /health/readiness
+volumes: []
+buildEnvs: 
+  - name: BP_NATIVE_IMAGE
+    value: "true"  
+envs: []
+annotations: {}
+options: {}
+labels: []

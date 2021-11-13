@@ -1,6 +1,5 @@
-# Function project
+# Dad Vibes Functions (short-term-memory-funcs)
 
-Welcome to your new Function project!
 
 This sample project contains a single function based on Spring Cloud Function: `functions.CloudFunctionApplication.uppercase()`, which returns the uppercase of the data passed via CloudEvents.
 

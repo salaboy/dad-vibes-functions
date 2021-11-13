@@ -5,6 +5,9 @@ import static org.springframework.cloud.function.cloudevent.CloudEventMessageUti
 import static org.springframework.cloud.function.cloudevent.CloudEventMessageUtils.SPECVERSION;
 import static org.springframework.cloud.function.cloudevent.CloudEventMessageUtils.SUBJECT;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -27,28 +30,78 @@ public class SpringCloudEventsApplication {
     SpringApplication.run(SpringCloudEventsApplication.class, args);
   }
 
+  private List<String> todos = new ArrayList<>();
+  private List<String> meetingReminders = new ArrayList<>();
+  
   @Bean
-  public Function<Message<Input>, Output> uppercase(CloudEventHeaderEnricher enricher) {
+  public Function<Message<Input>, Output> addTODO(CloudEventHeaderEnricher enricher) {
+    // If you are using CloudEvent Type based routing you should probably check that the CloudEvent that you 
+    //  are getting is the one that you are expecting. 
+    return m -> {
+      HttpHeaders httpHeaders = HeaderUtils.fromMessage(m.getHeaders());
+
+      log(httpHeaders);
+      
+      Input input = m.getPayload();
+      LOGGER.log(Level.INFO, "Input {0} ", input);
+      todos.add(input.input);
+      Output output = new Output();
+      output.input = input.input;
+      output.operation = httpHeaders.getFirst(SUBJECT)+"-ACK";;
+      output.output = input.input != null ? Arrays.toString(todos.toArray()) : "I don't remember anything to do.";
+      return output;
+    };
+  }
+
+  @Bean
+  public Function<Message<Input>, Output> addMeetingReminder(CloudEventHeaderEnricher enricher) {
+    // If you are using CloudEvent Type based routing you should probably check that the CloudEvent that you 
+    //  are getting is the one that you are expecting. 
     return m -> {
       HttpHeaders httpHeaders = HeaderUtils.fromMessage(m.getHeaders());
       
-      LOGGER.log(Level.INFO, "Input CE Id:{0}", httpHeaders.getFirst(
-          ID));
-      LOGGER.log(Level.INFO, "Input CE Spec Version:{0}",
-          httpHeaders.getFirst(SPECVERSION));
-      LOGGER.log(Level.INFO, "Input CE Source:{0}",
-          httpHeaders.getFirst(SOURCE));
-      LOGGER.log(Level.INFO, "Input CE Subject:{0}",
-          httpHeaders.getFirst(SUBJECT));
+      log(httpHeaders);
 
       Input input = m.getPayload();
       LOGGER.log(Level.INFO, "Input {0} ", input);
+      meetingReminders.add(input.input);
       Output output = new Output();
       output.input = input.input;
-      output.operation = httpHeaders.getFirst(SUBJECT);
-      output.output = input.input != null ? input.input.toUpperCase() : "NO DATA";
+      output.operation = httpHeaders.getFirst(SUBJECT)+"-ACK";
+      output.output = input.input != null ? Arrays.toString(meetingReminders.toArray()) : "Weird.. I don't have any meetings to attend.";
       return output;
     };
+  }
+
+  @Bean
+  public Function<Message<Input>, Output> dysfunction(CloudEventHeaderEnricher enricher) {
+    // If you are using CloudEvent Type based routing you should probably check that the CloudEvent that you 
+    //  are getting is the one that you are expecting. 
+    return m -> {
+      HttpHeaders httpHeaders = HeaderUtils.fromMessage(m.getHeaders());
+
+      log(httpHeaders);
+
+      Input input = m.getPayload();
+      LOGGER.log(Level.INFO, "Input {0} ", input);
+      todos.add(input.input);
+      Output output = new Output();
+      output.input = input.input;
+      output.operation = httpHeaders.getFirst(SUBJECT)+"-ACK";;
+      output.output = "Dysfunction is a function";
+      return output;
+    };
+  }
+
+  private void log(HttpHeaders httpHeaders) {
+    LOGGER.log(Level.INFO, "Input CE Id:{0}", httpHeaders.getFirst(
+      ID));
+    LOGGER.log(Level.INFO, "Input CE Spec Version:{0}",
+      httpHeaders.getFirst(SPECVERSION));
+    LOGGER.log(Level.INFO, "Input CE Source:{0}",
+      httpHeaders.getFirst(SOURCE));
+    LOGGER.log(Level.INFO, "Input CE Subject:{0}",
+      httpHeaders.getFirst(SUBJECT));
   }
 
   @Bean
@@ -57,8 +110,8 @@ public class SpringCloudEventsApplication {
         .setSpecVersion("1.0")
         .setId(UUID.randomUUID()
             .toString())
-        .setSource("http://example.com/uppercase")
-        .setType("com.redhat.faas.springboot.events");
+        .setSource("http://salaboy.com/springnative-example")
+        .setType("com.salaboy.springnative.events");
   }
 
   /**

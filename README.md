@@ -89,29 +89,59 @@ export URL=$(kn service describe $(basename $PWD) -ourl)
 
 ### cURL
 
+If you are running with `mvn spring-boot:run` you can export URL as follows:
+```
+export URL=localhost:8080
+```
+
 Using CloudEvents `Ce-Type` routing: 
+
 ```shell script
 curl -v "$URL/" \
   -H "Content-Type:application/json" \
   -H "Ce-Id:1" \
-  -H "Ce-Subject:Uppercase" \
-  -H "Ce-Source:cloud-event-example" \
-  -H "Ce-Type:uppercase" \
+  -H "Ce-Subject:AddTODO" \
+  -H "Ce-Source:curl" \
+  -H "Ce-Type:addTODO" \
   -H "Ce-Specversion:1.0" \
-  -d "{\"input\": \"$(whoami)\"}\""
+  -d "{\"input\": \"Buy some medicine\"}\""
 ```
+
+```shell script
+curl -v "$URL/" \
+  -H "Content-Type:application/json" \
+  -H "Ce-Id:1" \
+  -H "Ce-Subject:AddMeetingReminder" \
+  -H "Ce-Source:curl" \
+  -H "Ce-Type:addMeetingReminder" \
+  -H "Ce-Specversion:1.0" \
+  -d "{\"input\": \"9:00 am - This meeting could have been an email.\"}\""
+```
+
+```shell script
+curl -v "$URL/" \
+  -H "Content-Type:application/json" \
+  -H "Ce-Id:1" \
+  -H "Ce-Subject:Dysfunction" \
+  -H "Ce-Source:curl" \
+  -H "Ce-Type:dysfunction" \
+  -H "Ce-Specversion:1.0" \
+  -d "{\"input\": \"I am not sure what would you expect here .com.\"}\""
+```
+
 
 Using Path-Based routing:
 ```shell script
-curl -v "$URL/uppercase" \
+curl -v "$URL/addTODO" \
   -H "Content-Type:application/json" \
   -H "Ce-Id:1" \
   -H "Ce-Subject:Uppercase" \
   -H "Ce-Source:cloud-event-example" \
   -H "Ce-Type:my-event" \
   -H "Ce-Specversion:1.0" \
-  -d "{\"input\": \"$(whoami)\"}\""
+  -d "{\"input\": \"Buy some medicine\"}\""
 ```
+**Note**: that here the CE-Type doesn't matter, this cloud event will be routed to the `addTODO` function. 
 
 ### HTTPie
 

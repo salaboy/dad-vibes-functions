@@ -1,20 +1,22 @@
 name: dad-vibes-functions
 namespace: ""
 runtime: springboot
-image: ""
-imageDigest: ""
+registry: ""
+image: docker.io/salaboy/dad-vibes-functions:latest
+imageDigest: sha256:36ba73962f8ad8cba4f86d2bcee33b9c8451144ba4b7e365fdf0482228dd4fbc
 builder: paketobuildpacks/builder:tiny
 builders:
   default: paketobuildpacks/builder:tiny
 buildpacks: []
-healthEndpoints:
-  liveness: /health/liveness
-  readiness: /health/readiness
 volumes: []
-buildEnvs: 
-  - name: BP_NATIVE_IMAGE
-    value: "true"  
+buildEnvs:
+- name: BP_NATIVE_IMAGE
+  value: "true"
 envs: []
 annotations: {}
 options: {}
 labels: []
+healthEndpoints:
+  liveness: /health/liveness
+  readiness: /health/readiness
+created: 2006-01-02T15:04:05Z
